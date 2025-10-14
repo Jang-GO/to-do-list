@@ -1,0 +1,12 @@
+# IntelliJ IDE
+.idea/
+*.iml
+
+# Maven build output
+/target/
+
+# Log files
+*.log
+
+# Secrets file from previous discussion
+*-secrets.yml
