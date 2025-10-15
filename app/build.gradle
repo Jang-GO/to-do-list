@@ -8,6 +8,7 @@ group = 'janggo.practice'
 version = '0.0.1-SNAPSHOT'
 description = 'todolist'
 
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
@@ -41,4 +42,10 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+bootJar {
+	from("src/main/resources") {
+		into("/")
+	}
 }

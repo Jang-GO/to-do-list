@@ -25,10 +25,9 @@ public class TodoController {
     public String listTodos(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
         User currentUser = userDetails.getUser();
         model.addAttribute("todos", todoService.findTodosForUser(currentUser));
-        return "/todo/todos";
+        return "todo/todos";
     }
 
-    // 할 일 추가
     @PostMapping("/todos/add")
     public String addTodo(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam String content) {
         User currentUser = userDetails.getUser();
