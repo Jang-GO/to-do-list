@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>나의 할 일 목록</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f9; margin: 0; padding: 2rem; }
+        .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        h1 { margin: 0; }
+        .user-info { font-size: 1rem; color: #555; }
+        .logout-btn { background-color: #d9534f; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+        .add-form { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        .add-form input { flex-grow: 1; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; }
+        .add-form button { background-color: #007bff; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; }
+        .todo-list { list-style: none; padding: 0; }
+        .todo-item { display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #eee; }
+        .todo-item.completed span { text-decoration: line-through; color: #888; }
+        .todo-item span { flex-grow: 1; font-size: 1.1rem; }
+        .todo-item .actions { display: flex; gap: 0.5rem; }
+        .actions button { border: none; background: none; cursor: pointer; padding: 0.5rem; border-radius: 4px; }
+        .delete-btn { color: #d9534f; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>To-Do List</h1>
+        <div>
+            <span class="user-info" sec:authentication="name">사용자</span>님
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="logout-btn">로그아웃</button>
+            </form>
+        </div>
+    </div>
+
+    <form th:action="@{/todos/add}" method="post" class="add-form">
+        <input type="text" name="content" placeholder="새로운 할 일을 입력하세요" required>
+        <button type="submit">추가</button>
+    </form>
+
+    <ul class="todo-list">
+        <li th:each="todo : ${todos}" th:classappend="${todo.completed} ? 'completed'" class="todo-item">
+            <span>[[${todo.content}]]</span>
+            <div class="actions">
+                <form th:action="@{/todos/{id}/toggle(id=${todo.id})}" method="post">
+                    <button type="submit" th:text="${todo.completed} ? '취소' : '완료'">✔️</button>
+                </form>
+                <form th:action="@{/todos/{id}/delete(id=${todo.id})}" method="post">
+                    <button type="submit" class="delete-btn">삭제</button>
+                </form>
+            </div>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
