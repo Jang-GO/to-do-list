@@ -21,10 +21,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Build with Gradle
-        run: ./gradlew build
-        working-directory: ./app
-
       - name: Log in to OCI Container Registry
         uses: docker/login-action@v2
         with:
@@ -51,18 +47,29 @@ jobs:
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           script: |
+            # Docker가 설치되어 있는지 확인하고, 없으면 설치합니다.
+            if ! command -v docker &> /dev/null; then
+              echo "Docker not found, installing..."
+              sudo yum install -y yum-utils
+              sudo yum-config-manager --add-repo https://download.docker.com/linux/oracle/8/x86_64/stable
+              sudo yum install -y docker-ce docker-ce-cli containerd.io
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              echo "Docker installed."
+            fi
+
             # OCIR에 로그인합니다.
-            docker login ${{ secrets.OCIR_REGISTRY }} -u "${{ secrets.OCIR_NAMESPACE }}/${{ secrets.OCI_USERNAME }}" -p "${{ secrets.OCI_AUTH_TOKEN }}"
+            sudo docker login ${{ secrets.OCIR_REGISTRY }} -u "${{ secrets.OCIR_NAMESPACE }}/${{ secrets.OCI_USERNAME }}" -p "${{ secrets.OCI_AUTH_TOKEN }}"
             
             # 최신 이미지를 내려받습니다.
-            docker pull ${{ secrets.OCIR_REGISTRY }}/${{ secrets.OCIR_NAMESPACE }}/todo/todo-app:${{ github.sha }}
+            sudo docker pull ${{ secrets.OCIR_REGISTRY }}/${{ secrets.OCIR_NAMESPACE }}/todo/todo-app:${{ github.sha }}
             
-            # 기존 컨테이너가 있으면 중지하고 삭제합니다. (오류가 나도 계속 진행)
-            docker stop todo-app || true
-            docker rm todo-app || true
+            # 기존 컨테이너가 있으면 중지하고 삭제합니다.
+            sudo docker stop todo-app || true
+            sudo docker rm todo-app || true
             
             # 새 이미지로 컨테이너를 실행합니다.
-            docker run -d -p 8080:8080 --restart=always --name todo-app \
+            sudo docker run -d -p 8080:8080 --restart=always --name todo-app \
               -e SPRING_PROFILES_ACTIVE=prod \
               -e SPRING_DATASOURCE_URL=jdbc:mysql://${{ secrets.DB_ENDPOINT }}:3306/mysql?useSSL=false&serverTimezone=Asia/Seoul \
               -e SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USER }} \
