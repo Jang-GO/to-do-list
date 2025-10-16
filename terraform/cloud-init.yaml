@@ -1,0 +1,22 @@
+#cloud-config
+packages:
+  - docker
+
+runcmd:
+  # Docker 서비스 시작 및 자동 실행 설정
+  - systemctl enable --now docker
+  
+  # !! 중요 !!
+  # 이 부분은 나중에 GitHub Actions 파이프라인에서 자동으로 처리할 예정입니다.
+  # 지금은 Terraform 실행 후 수동으로 VM에 접속하여 docker login 명령을 실행해야 합니다.
+  # - docker login <리전키>.ocir.io -u <테넌시/유저> -p <인증토큰>
+
+  # Spring Boot 앱 컨테이너 실행
+  # !! 중요 !! : 아래 이미지 경로는 다음 단계에서 OCIR에 이미지를 푸시한 후,
+  #              실제 본인의 이미지 경로로 반드시 변경해야 합니다.
+  - docker run -d -p 8080:8080 --restart=always \
+    -e SPRING_DATASOURCE_URL=jdbc:mysql://${db_endpoint}:3306/mysql?useSSL=false&serverTimezone=Asia/Seoul \
+    -e SPRING_DATASOURCE_USERNAME=${db_user} \
+    -e SPRING_DATASOURCE_PASSWORD=${db_password} \
+    -e SPRING_PROFILES_ACTIVE=prod \
+    <your_ocir_image_path>/todo-app:latest

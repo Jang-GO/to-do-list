@@ -10,3 +10,28 @@
 
 # Secrets file from previous discussion
 *-secrets.yml
+
+ # Terraform state and plan files
+*.tfstate
+*.tfstate.*
+*.tfplan
+
+# Terraform variables files
+# Contains sensitive data, should not be committed
+*.tfvars
+*.tfvars.json
+
+# Terraform local working directory
+.terraform/
+
+# Terraform crash logs
+crash.log
+crash.*.log
+
+# Terraform override files
+*.override.tf
+*.override.tf.json
+*_override.tf
+*_override.tf.json
+
+
