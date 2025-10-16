@@ -10,7 +10,7 @@ on:
 # 환경 변수 설정
 env:
   OCI_REGION: ${{ secrets.OCI_REGION }}
-  OCIR_REPO: ${{ secrets.OCIR_TENANCY }}/todo-app # OCIR 리포지토리 경로
+  OCIR_REPO: ${{ secrets.OCIR_TENANCY }}/todo # OCIR 리포지토리 경로
 
 jobs:
   # 첫 번째 Job: Docker 이미지 빌드 및 OCIR에 푸시
