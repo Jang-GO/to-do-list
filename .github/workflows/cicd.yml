@@ -24,7 +24,7 @@ jobs:
 
       # 2. OCI CLI 설정 (OCIR 로그인을 위해 필요)
       - name: OCI CLI Setup
-        uses: oracle-actions/oci-cli-setup-action@v1.1
+        uses: oracle-actions/oci-cli-setup@v1.1
         with:
           auth_method: 'API_KEY'
           user: ${{ secrets.OCI_USER_OCID }}
